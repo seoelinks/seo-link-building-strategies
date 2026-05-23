@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEO Services | 3D Parallax Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #070b24;
+      --bg-2: #1b1146;
+      --bg-3: #0b6d74;
+      --text: #eaf6ff;
+      --muted: #b5c7db;
+      --accent: #34ffd0;
+      --accent-2: #62e3ff;
+      --glass: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --depth-shadow: 0 22px 55px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at 15% 15%, rgba(88, 29, 184, 0.45), transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(41, 187, 193, 0.3), transparent 40%),
+        linear-gradient(130deg, var(--bg-1), var(--bg-2) 55%, var(--bg-3));
+      overflow-x: hidden;
+    }
+
+    .bg-depth {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      transform-style: preserve-3d;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(6px);
+      opacity: .35;
+      animation: float 12s ease-in-out infinite;
+    }
+    .orb.one { width: 240px; height: 240px; left: 8%; top: 16%; background: #6a29ff; transform: translateY(calc(var(--scroll,0) * -0.08px)); }
+    .orb.two { width: 280px; height: 280px; right: 10%; top: 40%; background: #17e4f1; animation-delay: -3s; transform: translateY(calc(var(--scroll,0) * -0.16px)); }
+    .orb.three { width: 220px; height: 220px; left: 40%; top: 72%; background: #39ff8f; animation-delay: -6s; transform: translateY(calc(var(--scroll,0) * -0.22px)); }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(9, 12, 34, 0.7);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+      display: flex;
+      justify-content: center;
+      padding: .65rem;
+    }
+    .nav-scroll {
+      display: flex;
+      gap: .5rem;
+      overflow-x: auto;
+      max-width: 100%;
+      scrollbar-width: thin;
+      padding-inline: .5rem;
+    }
+    .nav-scroll a {
+      text-decoration: none;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 600;
+      padding: .5rem .75rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+      transition: .3s ease;
+    }
+    .nav-scroll a:hover, .nav-scroll a.active {
+      color: var(--text);
+      border-color: rgba(52,255,208,.5);
+      background: rgba(52,255,208,.14);
+      box-shadow: 0 0 0 1px rgba(52,255,208,.12), 0 8px 20px rgba(52,255,208,.18);
+    }
+
+    main { width: min(1200px, 92vw); margin-inline: auto; }
+
+    .section {
+      min-height: 70vh;
+      padding: 4rem 0;
+      position: relative;
+      opacity: 0;
+      transform: translateY(40px) rotateX(9deg);
+      transition: opacity .75s ease, transform .9s cubic-bezier(.2,.8,.2,1);
+    }
+    .section.in-view { opacity: 1; transform: translateY(0) rotateX(0); }
+
+    .panel {
+      border: 1px solid var(--glass-border);
+      background: linear-gradient(160deg, rgba(255,255,255,.11), rgba(255,255,255,.04));
+      box-shadow: var(--depth-shadow);
+      border-radius: 1.2rem;
+      padding: 1.3rem;
+      transform-style: preserve-3d;
+      transition: transform .35s ease, box-shadow .35s ease;
+    }
+    .panel:hover {
+      transform: translateY(-8px) rotateX(4deg) rotateY(-3deg) scale(1.01);
+      box-shadow: 0 28px 65px rgba(0,0,0,.5), 0 0 0 1px rgba(98,227,255,.2);
+    }
+
+    .kicker { color: var(--accent); font-size: .8rem; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; }
+    h1, h2 { margin: .4rem 0 .65rem; line-height: 1.1; text-shadow: 0 8px 30px rgba(0,0,0,.4); }
+    h1 { font-size: clamp(2rem, 5vw, 4rem); }
+    h2 { font-size: clamp(1.4rem, 3.5vw, 2.35rem); }
+    p { color: var(--muted); line-height: 1.65; }
+
+    .hero-grid, .two-col { display: grid; grid-template-columns: 1.1fr .9fr; gap: 1rem; align-items: center; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1rem; }
+    .btn {
+      border: 1px solid rgba(98,227,255,.6);
+      background: linear-gradient(120deg, rgba(98,227,255,.2), rgba(52,255,208,.2));
+      color: #f5ffff;
+      padding: .75rem 1.05rem;
+      border-radius: .85rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      transition: .25s ease;
+    }
+    .btn:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 25px rgba(57,255,143,.2); }
+
+    .scene {
+      min-height: 220px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .scene::before, .scene::after {
+      content: "";
+      position: absolute;
+      inset: 8% 10%;
+      border-radius: 1.2rem;
+      border: 1px solid rgba(255,255,255,.15);
+      transform: translateZ(0);
+      animation: pulse 4.2s ease-in-out infinite;
+    }
+    .scene::after { inset: 18% 20%; animation-delay: -2s; }
+    .scene b { font-size: clamp(2rem, 8vw, 4.5rem); opacity: .88; filter: drop-shadow(0 0 22px rgba(52,255,208,.32)); }
+
+    .services-grid, .mini-grid, .pricing-grid, .testimonial-grid, .faq-list, .logo-grid {
+      display: grid;
+      gap: .9rem;
+    }
+    .services-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .mini-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .pricing-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+    .testimonial-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .faq-list { grid-template-columns: 1fr; }
+    .logo-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+
+    details.service, details.faq {
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,.06);
+      border-radius: .9rem;
+      overflow: hidden;
+      transition: .35s ease;
+      transform-style: preserve-3d;
+    }
+    details.service[open], details.faq[open] { box-shadow: 0 18px 35px rgba(0,0,0,.33); }
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    summary::after { content: "+"; color: var(--accent); font-size: 1.2rem; }
+    details[open] summary::after { content: "−"; }
+    .service p, .faq p { padding: 0 1rem 1rem; margin: 0; }
+
+    .price-card ul { margin: .8rem 0 1rem 1rem; padding: 0; }
+    .price-card li { margin: .4rem 0; color: var(--muted); }
+
+    .testimonial .stars { color: #ffe887; letter-spacing: .15em; animation: shimmer 2.4s linear infinite; }
+
+    .badge {
+      display: inline-block;
+      padding: .25rem .6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(52,255,208,.6);
+      color: #c9fff2;
+      font-size: .76rem;
+      margin-right: .4rem;
+    }
+
+    footer { padding: 4rem 0 5rem; text-align: center; color: var(--muted); }
+
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-26px)} }
+    @keyframes pulse { 0%,100%{opacity:.4; transform:scale(1)} 50%{opacity:.9; transform:scale(1.08)} }
+    @keyframes shimmer { 0%{opacity:.6} 50%{opacity:1} 100%{opacity:.6} }
+
+    @media (max-width: 900px) {
+      .hero-grid, .two-col { grid-template-columns: 1fr; }
+      .section { min-height: auto; padding: 3.2rem 0; transform: translateY(22px); }
+      .panel:hover { transform: translateY(-4px) scale(1.01); }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-depth" aria-hidden="true">
+    <div class="orb one"></div><div class="orb two"></div><div class="orb three"></div>
+  </div>
+
+  <nav class="navbar">
+    <div class="nav-scroll" id="navLinks"></div>
+  </nav>
+
+  <main id="app"></main>
+
+  <footer class="section in-view" id="footer-social">
+    <div class="panel">
+      <h2>SEO Services That Feel Premium & Perform Like a Growth Engine</h2>
+      <p>Book a strategy call and get a roadmap that pairs ranking gains with measurable revenue outcomes.</p>
+      <p>
+        <span class="badge">LinkedIn</span><span class="badge">YouTube</span><span class="badge">X / Twitter</span><span class="badge">Instagram</span>
+      </p>
+      <small>© 2026 SEO Services Experience</small>
+    </div>
+  </footer>
+
+  <script>
+    const mainSections = [
+      ['hero','Hero','Globe-like search network with radiating light beams and kinetic depth layers.','🌐'],
+      ['seo-services','SEO Services','Floating service cards that snap into a conversion-focused grid.','🧩'],
+      ['on-page-seo','On-Page SEO','Expanding page mesh that highlights tags, metadata, and hierarchy.','📄'],
+      ['technical-seo','Technical SEO','Server-rack style modules assembling with crawl-path animations.','🖥️'],
+      ['content-seo','Content SEO','Content towers stacking upward to represent topical authority growth.','🏙️'],
+      ['local-seo','Local SEO','Brampton/Canada style pin map with layered depth markers.','📍'],
+      ['ecommerce-seo','E-Commerce SEO','3D product cards and filter rails sliding into position.','🛒'],
+      ['audit-reporting','Audit & Reporting','Dashboard surfaces and charts materializing as users scroll.','📊'],
+      ['link-building','Link Building','Chain links connecting domain nodes and authority bridges.','🔗'],
+      ['blog-seo','Blog SEO','Horizontal river of blog cards with speed-controlled drift.','📰'],
+      ['saas-seo','SaaS SEO','Product UI fragments orbiting a central SaaS growth core.','🧠'],
+      ['agency-seo','Agency SEO','Team avatar cards circling a strategic command center.','👥'],
+      ['international-seo','International SEO','Rotating world cluster with multilingual market waypoints.','🌍'],
+      ['mobile-first-seo','Mobile-First SEO','Rotating smartphone with speed-meter and vitals indicators.','📱'],
+      ['voice-seo','Voice SEO','Microphone waveform pulses with query-intent ripples.','🎙️'],
+      ['youtube-seo','YouTube SEO','Video wall tiles layering into a discoverability matrix.','▶️'],
+      ['speed-performance','Speed & Performance SEO','Launch-sequence rocket rising from a loading runway.','🚀'],
+      ['conversion-seo','Conversion-Focused SEO','A/B CTA elements morphing toward winner variants.','🎯'],
+      ['case-studies','Case Studies','Before/after graph boards with proof-driven lift motion.','📈'],
+      ['why-choose-us','Why Choose Us','Benefit icons orbiting around a trust-centered hub.','⭐']
+    ];
+
+    const extraSections = [
+      ['about-us','About Us','3D team circle and values architecture.','🧭'],
+      ['seo-process','SEO Process','Milestone timeline that rises with scroll depth.','🛤️'],
+      ['industries','Industries We Serve','Segment cards for healthcare, legal, SaaS, home services, and more.','🏭'],
+      ['tools','Tools We Use','Tech stack grid showcasing crawlers, data suites, and BI.','🛠️'],
+      ['partner-logos','Partner Logos Gallery','Floating logo slabs in a depth-aware marquee.','🤝'],
+      ['blog-preview','Blog Preview','Thought-leadership previews with layered article cards.','🧾'],
+      ['free-audit','Free SEO Audit Offer','High-contrast offer panel with glow CTA.','🧪'],
+      ['guarantee','Money-Back Guarantee','Trust seal animation with shield-like movement.','🛡️'],
+      ['data-privacy','Data Privacy','Encrypted vault motif with privacy checkpoints.','🔐'],
+      ['extended-faq','Extended FAQs','Additional quick answers in micro-accordion cards.','❓'],
+      ['pricing','Pricing','3D pricing tiers with hover-lift interactions.','💳'],
+      ['testimonials','Testimonials','Floating speech-bubble testimonials and animated ratings.','💬'],
+      ['faq','FAQ','Flip-style accordion for high-intent questions.','📚'],
+      ['contact-form','Contact Form','Floating form shell with soft drift and glow edge.','✉️'],
+      ['map-location','Map Location','Layered map panel with service area hotspots.','🗺️']
+    ];
+
+    const services = Array.from({ length: 55 }, (_, i) => {
+      const names = [
+        'Keyword Intent Mapping','Competitive Gap Analysis','Technical Crawl Diagnostics','Schema Markup Deployment','On-Page Optimization Sprint','SEO Content Strategy','Topical Cluster Architecture','Local SEO Management','Google Business Profile Optimization','Citation & NAP Consistency','E-Commerce Category SEO','Product Page Optimization','Internal Linking Engineering','Core Web Vitals Optimization','Image SEO Optimization','Video SEO Framework','Voice Search Optimization','Multilingual SEO Strategy','International hreflang Setup','Indexation Control & Pruning','Log File Analysis','Redirect & Canonical Management','Broken Link Reclamation','Digital PR Outreach','High-Authority Link Acquisition','Anchor Text Optimization','Toxic Link Remediation','SEO Reporting Dashboard','GA4 & GSC Integration','Conversion Funnel SEO','Landing Page CRO for SEO','SaaS SEO Campaigns','B2B SEO Programs','Enterprise SEO Governance','Franchise SEO Rollout','SEO Migration Planning','Site Architecture Rebuild','Blog SEO Acceleration','Content Refresh Program','Topic Authority Growth Plan','FAQ & Snippet Optimization','YouTube SEO Management','Podcast SEO Syndication','App Store SEO Support','Mobile SEO Hardening','JavaScript SEO Audits','Featured Snippet Capture','E-E-A-T Authority Building','Brand SERP Optimization','Reputation & Review SEO','Geo-Targeted Service SEO','Seasonal Campaign SEO','Lead-Gen SEO Blueprints','Revenue Attribution Modeling','SEO Training & Enablement'
+      ];
+      const title = names[i] || `SEO Service ${i + 1}`;
+      return {
+        title,
+        description: `${title} improves rankings by aligning your site with how users and search engines evaluate relevance, trust, and performance. Our team audits intent, content structure, technical signals, and competitive positioning to uncover the fastest path to higher visibility. We implement prioritized fixes, publish conversion-ready assets, and track movement across target keywords, traffic, and leads in one transparent workflow. This service is ideal for local brands, growing startups, ecommerce teams, and established companies that need predictable organic growth. The result is stronger topical authority, better user engagement, and a sustainable pipeline of high-intent visitors that converts into qualified revenue.`
+      };
+    });
+
+    const testimonials = [
+      ['Ava Patel','B2B SaaS','Their SEO framework gave us top 3 rankings for high-value terms in under six months. Pipeline quality improved dramatically and sales cycles shortened.'],
+      ['Noah Tremblay','Home Services','We went from inconsistent leads to daily inbound calls. Local SEO visibility exploded and map pack positions became stable.'],
+      ['Sophia Nguyen','E-Commerce Retail','Category pages started ranking, product pages converted better, and revenue from organic search nearly doubled quarter over quarter.'],
+      ['Liam Carter','Legal Firm','Their technical cleanup and content strategy helped us outrank long-standing competitors in our regional market.'],
+      ['Mia Fernandes','Healthcare Clinic','Patient bookings rose steadily after they rebuilt our local SEO foundation and optimized service pages with intent precision.'],
+      ['Ethan Brooks','Fintech Startup','We needed authority fast. Their digital PR and link strategy earned meaningful placements and trust signals.'],
+      ['Isabella Khan','Marketing Agency','White-label collaboration was flawless. Reporting was clear, fast, and easy to present to clients every month.'],
+      ['Lucas Roy','Real Estate','Neighborhood landing pages and GBP optimization produced measurable lead growth in each target district.'],
+      ['Emma Wilson','Education Platform','Our content hub became a lead engine. Rankings improved across informational and commercial clusters.'],
+      ['Benjamin Lee','Manufacturing','International SEO setup opened new markets and improved qualified traffic from multiple countries.']
+    ];
+
+    const faqs = [
+      ['How long does SEO take?','Most campaigns start showing traction in 8 to 12 weeks, with compounding gains between months 4 and 9 depending on competition, site health, and content velocity.'],
+      ['Do you offer local SEO?','Yes. We optimize Google Business Profile, local landing pages, citation consistency, and review strategy to improve map visibility and local lead flow.'],
+      ['Can you work with existing websites?','Absolutely. We audit your current setup, preserve equity, and improve technical, content, and conversion elements without unnecessary rebuilds.'],
+      ['Do you provide technical SEO only?','Yes, we can run dedicated technical engagements focused on crawlability, indexation, site speed, architecture, and structured data.'],
+      ['How do you measure SEO success?','We connect rankings and traffic to business outcomes like calls, form fills, demos, and revenue using GA4, Search Console, and CRM-ready reporting.'],
+      ['Is link building included?','Yes. We run ethical, authority-focused acquisition through digital PR, strategic outreach, and link reclamation based on your niche.'],
+      ['Do you support ecommerce brands?','Yes. We optimize category architecture, product detail pages, faceted navigation, and shopping-intent content to grow non-branded sales.'],
+      ['Will SEO replace paid ads?','SEO and paid search work best together. SEO lowers long-term acquisition costs while paid campaigns fill immediate demand.'],
+      ['Do you offer monthly reporting?','Every month includes transparent reporting, action summaries, KPI movement, and next-step priorities aligned to outcomes.'],
+      ['Can I request a custom plan?','Yes, we tailor scope by goals, market competition, internal team resources, and timeline expectations.']
+    ];
+
+    const app = document.getElementById('app');
+    const nav = document.getElementById('navLinks');
+
+    const sectionCard = ([id, title, desc, icon], i) => `
+      <section class="section" id="${id}">
+        <div class="${i === 0 ? 'hero-grid' : 'two-col'}">
+          <div class="panel">
+            <div class="kicker">SEO Services Experience</div>
+            <h${i===0?'1':'2'}>${title}</h${i===0?'1':'2'}>
+            <p>${desc}</p>
+            ${i===0 ? '<div class="cta-row"><a class="btn" href="#pricing-table">View Pricing</a><a class="btn" href="#contact-final">Get Strategy Call</a></div>' : ''}
+          </div>
+          <div class="panel scene" aria-hidden="true"><b>${icon}</b></div>
+        </div>
+      </section>
+    `;
+
+    app.insertAdjacentHTML('beforeend', mainSections.map(sectionCard).join(''));
+
+    app.insertAdjacentHTML('beforeend', `
+      <section class="section" id="services-library">
+        <div class="panel">
+          <div class="kicker">55+ Deliverables</div>
+          <h2>Full SEO Services Library</h2>
+          <p>Open any service to view a detailed 100-word style breakdown of ranking impact, ideal business fit, and long-term SEO benefit.</p>
+          <div class="services-grid">
+            ${services.map(s => `<details class="service"><summary>${s.title}</summary><p>${s.description}</p></details>`).join('')}
+          </div>
+        </div>
+      </section>
+    `);
+
+    app.insertAdjacentHTML('beforeend', extraSections.map((item, i) => sectionCard(item, i + 1)).join(''));
+
+    app.insertAdjacentHTML('beforeend', `
+      <section class="section" id="pricing-table">
+        <div class="panel">
+          <div class="kicker">Pricing</div>
+          <h2>Premium SEO Growth Plans</h2>
+          <div class="pricing-grid">
+            <article class="panel price-card">
+              <h3>Launch</h3><p><strong>$1,490/mo</strong></p>
+              <ul>
+                <li>Technical SEO audit</li><li>Keyword roadmap</li><li>On-page optimization</li><li>Content briefs</li><li>GBP support</li>
+                <li>Basic link outreach</li><li>Monthly reporting</li><li>CRO recommendations</li><li>Schema setup</li><li>Competitor scans</li>
+                <li>Internal links</li><li>Core Web Vitals checks</li><li>Quarterly strategy</li><li>Email support</li><li>Lead tracking setup</li>
+              </ul>
+              <a class="btn" href="#contact-final">Start Launch</a>
+            </article>
+            <article class="panel price-card">
+              <h3>Scale</h3><p><strong>$2,990/mo</strong></p>
+              <ul>
+                <li>Everything in Launch</li><li>Advanced technical fixes</li><li>8 SEO content assets/mo</li><li>Digital PR campaigns</li><li>Authority link building</li>
+                <li>Conversion landing pages</li><li>Local + national strategy</li><li>Video/YouTube SEO</li><li>A/B SEO testing</li><li>Crawl budget optimization</li>
+                <li>Executive dashboards</li><li>SERP feature capture</li><li>Weekly sprints</li><li>Priority support</li><li>Revenue attribution</li>
+              </ul>
+              <a class="btn" href="#contact-final">Choose Scale</a>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="testimonials-carousel">
+        <div class="panel">
+          <div class="kicker">Client Voices</div>
+          <h2>10 Testimonials from Growth-Focused Brands</h2>
+          <div class="testimonial-grid">
+            ${testimonials.map(t => `<article class="panel testimonial"><div class="stars">★★★★★</div><h3>${t[0]}</h3><small>${t[1]}</small><p>${t[2]}</p></article>`).join('')}
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="faq-accordion">
+        <div class="panel">
+          <div class="kicker">FAQ</div>
+          <h2>Answers to Common SEO Questions</h2>
+          <div class="faq-list">
+            ${faqs.map(f => `<details class="faq"><summary>${f[0]}</summary><p>${f[1]}</p></details>`).join('')}
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="contact-final">
+        <div class="panel">
+          <div class="kicker">Contact</div>
+          <h2>Book a 3D Strategy Session</h2>
+          <div class="two-col">
+            <form class="panel" id="contact-form-inner">
+              <label>Name<input required style="width:100%;margin:.35rem 0 .75rem;padding:.7rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.24);background:rgba(6,8,24,.5);color:#fff"></label>
+              <label>Email<input type="email" required style="width:100%;margin:.35rem 0 .75rem;padding:.7rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.24);background:rgba(6,8,24,.5);color:#fff"></label>
+              <label>Website<input style="width:100%;margin:.35rem 0 .75rem;padding:.7rem;border-radius:.6rem;border:1px solid rgba(255,255,255,.24);background:rgba(6,8,24,.5);color:#fff"></label>
+              <button class="btn" type="submit">Request Proposal</button>
+            </form>
+            <div class="panel">
+              <h3>Map & Service Area</h3>
+              <p>Serving Brampton, Toronto, Canada, and global markets with multilingual SEO strategy.</p>
+              <div class="logo-grid">
+                <span class="badge">Brampton</span><span class="badge">Toronto</span><span class="badge">Vancouver</span><span class="badge">USA</span><span class="badge">UK</span><span class="badge">UAE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    `);
+
+    const allNavSections = [...mainSections, ['services-library','Services Library'], ...extraSections, ['pricing-table','Pricing'], ['testimonials-carousel','Testimonials'], ['faq-accordion','FAQ'], ['contact-final','Contact']];
+    nav.innerHTML = allNavSections.map(([id, title]) => `<a href="#${id}">${title}</a>`).join('');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('in-view');
+      });
+    }, { threshold: 0.16 });
+
+    document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+    const navObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          document.querySelectorAll('.nav-scroll a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === `#${entry.target.id}`));
+        }
+      });
+    }, { threshold: 0.45 });
+
+    document.querySelectorAll('main .section').forEach(s => navObserver.observe(s));
+
+    document.getElementById('contact-form-inner').addEventListener('submit', (e) => {
+      e.preventDefault();
+      alert('Thanks! Your SEO strategy request has been received.');
+    });
+
+    window.addEventListener('scroll', () => {
+      document.documentElement.style.setProperty('--scroll', window.scrollY.toFixed(2));
+    }, { passive: true });
+  </script>
+</body>
+</html>
